@@ -11,7 +11,7 @@ use Laravel\Passport\HasApiTokens;
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
-
+  
     /**
      * The attributes that are mass assignable.
      *
@@ -22,7 +22,7 @@ class User extends Authenticatable
         'email',
         'password',
     ];
-
+  
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -32,7 +32,7 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
-
+  
     /**
      * The attributes that should be cast to native types.
      *
