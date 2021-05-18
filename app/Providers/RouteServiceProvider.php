@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Http\Middleware\UserUrlBlocker;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
@@ -26,7 +27,7 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string|null
      */
-    // protected $namespace = 'App\\Http\\Controllers';
+    protected $namespace = 'App\Http\Controllers';
 
     /**
      * Define your route model bindings, pattern filters, etc.
@@ -35,19 +36,60 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->configureRateLimiting();
+        // $this->configureRateLimiting();
 
-        $this->routes(function () {
-            Route::prefix('api')
-                ->middleware('api')
-                ->namespace($this->namespace)
-                ->group(base_path('routes/api.php'));
+        // $this->routes(function () {
+        //     Route::prefix('api')
+        //         ->middleware('api')
+        //         ->namespace($this->namespace)
+        //         ->group(base_path('routes/api.php'));
 
-            Route::middleware('web')
-                ->namespace($this->namespace)
-                ->group(base_path('routes/web.php'));
-        });
+        //     Route::middleware('web', UserUrlBlocker::class)
+        //         ->namespace($this->namespace)
+        //         ->group(base_path('routes/web.php'));
+        // });
+
+        parent::boot();
     }
+
+    /**
+	 * Define the routes for the application.
+	 *
+	 * @return void
+	 */
+	public function map()
+	{
+		$this->mapApiRoutes();
+
+		$this->mapWebRoutes();
+
+		//
+	}
+
+    protected function mapWebRoutes()
+	{
+		Route::middleware([
+			'web',
+			UserUrlBlocker::class
+		])
+		->namespace($this->namespace)
+		->group(base_path('routes/web.php'));
+	}
+
+	/**
+	 * Define the "api" routes for the application.
+	 *
+	 * These routes are typically stateless.
+	 *
+	 * @return void
+	 */
+	protected function mapApiRoutes()
+	{
+		Route::prefix('service')
+			->middleware('api')
+			->namespace($this->namespace)
+			->group(base_path('routes/api.php'));
+	}
 
     /**
      * Configure the rate limiters for the application.

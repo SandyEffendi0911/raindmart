@@ -1,6 +1,10 @@
 <?php
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\DashboardController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +17,27 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+
+Route::get('/', [AuthController::class, 'showLoginForm']);
+Route::get('/login', [AuthController::class, 'showLoginForm']);
+Route::post('/register', [AuthController::class, 'registeruser']);
+Route::post('/login', [AuthController::class, 'authenticate'])->name('login');
+
+Route::group(['middleware' => 'auth'], function () {
+    Route::get('/home', [DashboardController::class, 'index'])->name('home');
+    Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+    
+
+     /*
+     |------------------------------------------------------------------------
+     | Module own Routers
+     |------------------------------------------------------------------------
+     | auto include all route in folder links
+     | 
+    */
+    foreach (glob(base_path('routes/links/*.php')) as $filename) {
+        require $filename;
+    }
 });
+
+
